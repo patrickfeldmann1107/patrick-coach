@@ -1,0 +1,5 @@
+# Always revalidate the dashboard so your phone never shows a stale copy.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
