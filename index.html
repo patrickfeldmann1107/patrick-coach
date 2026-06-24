@@ -183,20 +183,20 @@ canvas{max-width:100%}
 /* ---------------- Program ---------------- */
 var PROGRAM = {
   "Full A": { tag:"Mon · squat + push/pull", ex:[
-    {id:"fa1", name:"Goblet Squat", sets:3, lo:8, hi:12, start:23, inc:2, unit:"kg", lastSession:"23 kg × 9/9/9 (2026-06-15)"},
-    {id:"fa2", name:"Flat DB Press — neutral grip", sets:3, lo:8, hi:12, start:20, inc:2, unit:"kg", lastSession:"20 kg × 9/10/9 (2026-06-15)"},
-    {id:"fa3", name:"One-Arm DB Row", sets:3, lo:8, hi:12, start:23, inc:2.5, unit:"kg", side:true, lastSession:"23 kg × 10/10/10 per side (2026-06-15)"},
-    {id:"fa4", name:"DB Romanian Deadlift", sets:2, lo:10, hi:12, start:24, inc:2, unit:"kg", perHand:true, lastSession:"23 kg × 12/12 — TOP, bumped to 24 kg (2026-06-15)"},
-    {id:"fa5", name:"DB Biceps Curl", sets:2, lo:10, hi:15, start:11, inc:2, unit:"kg", lastSession:"11 kg × 12/12 (2026-06-15)"},
-    {id:"fa6", name:"Plank", sets:2, lo:45, hi:60, start:0, inc:0, unit:"s", bw:true, time:true, lastSession:"45 s / 45 s — TOP, bumped to 50 s target (2026-06-15)"}
+    {id:"fa1", name:"Goblet Squat", sets:3, lo:8, hi:12, start:23, inc:2, unit:"kg", lastSession:"23 kg × 9/9/9 — MAX effort (2026-06-22)"},
+    {id:"fa2", name:"Flat DB Press — neutral grip", sets:3, lo:8, hi:12, start:23, inc:2, unit:"kg", lastSession:"23 kg × 8/8/8 — jumped from 20, '20 felt light' (2026-06-22)"},
+    {id:"fa3", name:"One-Arm DB Row", sets:3, lo:8, hi:12, start:25, inc:2.5, unit:"kg", side:true, lastSession:"23 kg × 12/12/12 — TOP, bumped to 25 kg (no 24 on DBs) (2026-06-22)"},
+    {id:"fa4", name:"DB Romanian Deadlift", sets:2, lo:10, hi:12, start:25, inc:2, unit:"kg", perHand:true, lastSession:"23 kg × 11/11 — bumping to 25 (no 24 on DBs) (2026-06-22)"},
+    {id:"fa5", name:"DB Biceps Curl", sets:2, lo:10, hi:15, start:11, inc:2, unit:"kg", lastSession:"11 kg × 12/12 — MAX effort (2026-06-22)"},
+    {id:"fa6", name:"Plank", sets:2, lo:60, hi:75, start:12, inc:0, unit:"s", time:true, load:"12 kg vest", note:"12 kg weight vest", lastSession:"60 s / 60 s — TOP bodyweight; locked loaded: 12 kg vest going forward (2026-06-22)"}
   ]},
   "Full B": { tag:"Wed · hinge + vertical pull", ex:[
-    {id:"fb1", name:"DB Romanian Deadlift", sets:3, lo:8, hi:12, start:25, inc:2, unit:"kg", perHand:true, lastSession:"25 kg × 8/8/8 (2026-06-10)"},
-    {id:"fb2", name:"Pull-Ups — neutral / chin", sets:3, lo:5, hi:10, start:0, inc:0, unit:"reps", bw:true, vestAt:true, note:"small black band (light assist)", lastSession:"5 / 5 / 5 with small black band (2026-06-10)"},
-    {id:"fb3", name:"Low-Incline DB Press — neutral (~30°)", sets:3, lo:8, hi:12, start:20, inc:2, unit:"kg", lastSession:"20 kg × 6/8/8 — set 1 short, fatigue carryover (2026-06-10)"},
-    {id:"fb4", name:"DB Bulgarian Split Squat", sets:2, lo:8, hi:10, start:11, inc:2, unit:"kg", side:true, lastSession:"11 kg × 8/8 per side (2026-06-10)"},
-    {id:"fb5", name:"Hammer Curl", sets:2, lo:10, hi:15, start:11, inc:2, unit:"kg", lastSession:"11 kg × 10/10 (2026-06-10)"},
-    {id:"fb6", name:"Hanging Knee Raise", sets:2, lo:10, hi:15, start:0, inc:0, unit:"reps", bw:true, lastSession:"10 / 10 (2026-06-10)"}
+    {id:"fb1", name:"DB Romanian Deadlift", sets:3, lo:8, hi:12, start:25, inc:2, unit:"kg", perHand:true, lastSession:"25 kg × 9/9/9 (2026-06-17)"},
+    {id:"fb2", name:"Pull-Ups — neutral / chin", sets:3, lo:5, hi:10, start:0, inc:0, unit:"reps", bw:true, vestAt:true, note:"small black light band — target 7/7/7; band drops for set 1 once 10+/set", lastSession:"6 / 6 / 6 with small black band (2026-06-17)"},
+    {id:"fb3", name:"Low-Incline DB Press — neutral (~30°)", sets:3, lo:8, hi:12, start:20, inc:2, unit:"kg", lastSession:"20 kg × 9/9/9 — set 1 normalized vs Wk1 (2026-06-17)"},
+    {id:"fb4", name:"DB Bulgarian Split Squat", sets:2, lo:8, hi:10, start:11, inc:2, unit:"kg", side:true, lastSession:"11 kg × 9/9 per side (2026-06-17)"},
+    {id:"fb5", name:"Hammer Curl", sets:2, lo:10, hi:15, start:12, inc:2, unit:"kg", lastSession:"11 kg × 15/15 — TOP, bumped to 12 kg (2026-06-17)"},
+    {id:"fb6", name:"Hanging Knee Raise", sets:2, lo:8, hi:10, start:4, inc:1, unit:"kg", note:"DB held between feet", lastSession:"15 / 15 bodyweight — TOP, locked loaded: 4 kg DB between feet going forward (2026-06-17)"}
   ]},
   "Full C": { tag:"Fri · lunge + row + press", ex:[
     {id:"fc1", name:"DB Reverse Lunge", sets:3, lo:8, hi:10, start:11, inc:2, unit:"kg", side:true, lastSession:"11 kg × 8/8/8 per side (2026-06-12)"},
