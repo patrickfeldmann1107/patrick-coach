@@ -107,11 +107,6 @@ canvas{max-width:100%}
     <button class="linklike" id="settingsBtn">⚙︎ Reset</button>
   </div>
 
-  <div class="tabs">
-    <button class="tab active" data-tab="training">🏋️ Training</button>
-    <button class="tab" data-tab="nutrition">🍗 Nutrition</button>
-  </div>
-
   <!-- ============ TRAINING ============ -->
   <section id="training">
     <div class="card">
@@ -125,54 +120,6 @@ canvas{max-width:100%}
     <div class="note">Auto-progression is on: hit the top of the rep range on <b>every</b> set and the working weight bumps up automatically next time. Otherwise keep the weight and chase reps. Always leave 1&ndash;2 reps in the tank &mdash; protect that shoulder.</div>
   </section>
 
-  <!-- ============ NUTRITION ============ -->
-  <section id="nutrition" class="hidden">
-    <div class="card">
-      <div class="spread">
-        <h2 style="margin:0">Today &middot; <span id="nutDate"></span></h2>
-        <input type="date" id="dayPick" style="width:auto;padding:6px 8px;font-size:13px">
-      </div>
-      <div class="bars" id="targetBars"></div>
-      <div class="macro" id="macroGrid"></div>
-      <div class="hint" id="nutFeedback" style="margin-top:10px"></div>
-      <div style="margin-top:8px"><button class="linklike" id="editTargets">✎ Edit daily targets</button></div>
-      <div id="targetEditor" class="hidden" style="margin-top:8px">
-        <div class="flex4">
-          <div><label class="fld">kcal</label><input type="number" inputmode="numeric" id="tKcal"></div>
-          <div><label class="fld">Protein</label><input type="number" inputmode="numeric" id="tProt"></div>
-          <div><label class="fld">Carbs</label><input type="number" inputmode="numeric" id="tCarb"></div>
-          <div><label class="fld">Fat</label><input type="number" inputmode="numeric" id="tFat"></div>
-        </div>
-        <button class="btn btn-ghost btn-sm" id="saveTargets" style="margin-top:8px;width:100%">Save targets</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>Add a meal</h2>
-      <label class="fld">Quick type &mdash; describe it</label>
-      <textarea id="mealText" rows="2" placeholder="e.g. 200g chicken breast, 150g cooked rice, 1 tbsp olive oil, big salad"></textarea>
-      <button class="btn btn-ghost btn-sm" id="estimateBtn" style="margin-top:8px;width:100%">✨ Estimate macros</button>
-      <div class="flex4" style="margin-top:10px">
-        <div><label class="fld">kcal</label><input type="number" inputmode="numeric" id="mKcal" placeholder="0"></div>
-        <div><label class="fld">Protein</label><input type="number" inputmode="numeric" id="mProt" placeholder="0"></div>
-        <div><label class="fld">Carbs</label><input type="number" inputmode="numeric" id="mCarb" placeholder="0"></div>
-        <div><label class="fld">Fat</label><input type="number" inputmode="numeric" id="mFat" placeholder="0"></div>
-      </div>
-      <input id="mLabel" placeholder="Label (optional)" style="margin-top:8px">
-      <button class="btn btn-green" id="addMeal" style="margin-top:10px;width:100%">Add to today</button>
-      <div class="note">📷 <b>Meal photo?</b> Send it to me (Claude) in chat &mdash; I&rsquo;ll read the plate and give you the numbers to type here. Photo estimates are approximate, but plenty good to keep protein on track.</div>
-    </div>
-
-    <div class="card">
-      <h2>Logged today</h2>
-      <div id="mealList"><div class="muted tiny">Nothing logged yet.</div></div>
-    </div>
-
-    <div class="card">
-      <h2>Last 7 days &middot; protein</h2>
-      <canvas id="proteinChart" height="150"></canvas>
-    </div>
-  </section>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -279,18 +226,7 @@ function shareSession(){
   }
 }
 
-/* ---------------- Tabs ---------------- */
-var tabBtns = document.querySelectorAll(".tab");
-tabBtns.forEach(function(b){
-  b.addEventListener("click", function(){
-    tabBtns.forEach(function(x){ x.classList.remove("active"); });
-    b.classList.add("active");
-    var t = b.getAttribute("data-tab");
-    document.getElementById("training").classList.toggle("hidden", t!=="training");
-    document.getElementById("nutrition").classList.toggle("hidden", t!=="nutrition");
-    if(t==="nutrition"){ renderNutrition(); }
-  });
-});
+/* tabs removed — training only */
 
 /* ---------------- Training render ---------------- */
 function suggestedIndex(){ return (state.train.lastDone + 1 + ROTATION.length) % ROTATION.length; }
@@ -467,160 +403,11 @@ document.getElementById("saveSession").addEventListener("click", function(){
   window.scrollTo({top:0,behavior:"smooth"});
 });
 
-/* ---------------- Nutrition ---------------- */
-function dayMeals(d){ return (state.food[d] || []); }
-function totals(d){
-  var t={kcal:0,protein:0,carbs:0,fat:0};
-  dayMeals(d).forEach(function(m){ t.kcal+=m.kcal||0; t.protein+=m.protein||0; t.carbs+=m.carbs||0; t.fat+=m.fat||0; });
-  return t;
-}
-function selectedDay(){ var dp=document.getElementById("dayPick"); return dp.value || todayKey(); }
-
-function barRow(label, val, tgt, color){
-  var pct = tgt>0 ? Math.min(100, Math.round(val/tgt*100)) : 0;
-  var over = val>tgt;
-  return '<div class="spread tiny"><b>'+label+'</b><span class="muted">'+Math.round(val)+' / '+tgt+'</span></div>'+
-    '<div class="bar"><i style="width:'+pct+'%;background:'+(over?'#b9770e':color)+'"></i></div>';
-}
-
-function renderNutrition(){
-  var d = selectedDay();
-  document.getElementById("nutDate").textContent = (d===todayKey()?"today":d);
-  var t = totals(d), tg = state.targets;
-  document.getElementById("targetBars").innerHTML =
-    barRow("Protein", t.protein, tg.protein, "linear-gradient(90deg,#2e9e5f,#1e6b41)") +
-    '<div style="height:8px"></div>' +
-    barRow("Calories", t.kcal, tg.kcal, "linear-gradient(90deg,#4a78c0,#2e5496)");
-  document.getElementById("macroGrid").innerHTML =
-    macroCell("Protein", t.protein, tg.protein, "g") +
-    macroCell("Carbs", t.carbs, tg.carbs, "g") +
-    macroCell("Fat", t.fat, tg.fat, "g") +
-    macroCell("kcal", t.kcal, tg.kcal, "");
-  // feedback
-  var fb="", remP = tg.protein - t.protein, remK = tg.kcal - t.kcal;
-  if(remP>0){ fb = Math.round(remP)+"g protein to go (~"+Math.max(1,Math.ceil(remP/30))+" more palm-sized servings)."; }
-  else { fb = "✅ Protein target hit ("+Math.round(t.protein)+"g). Nice."; }
-  if(remK<0){ fb += " You're "+Math.round(-remK)+" kcal over — ease the carbs/fats."; }
-  else if(t.kcal>0){ fb += " "+Math.round(remK)+" kcal left."; }
-  document.getElementById("nutFeedback").textContent = fb;
-  renderMeals(d);
-  renderProteinChart();
-}
-function macroCell(k,v,tg,u){
-  return '<div class="m"><div class="v">'+Math.round(v)+'<span class="tiny muted">'+u+'</span></div><div class="k">'+k+'</div><div class="tiny muted">/ '+tg+u+'</div></div>';
-}
-function renderMeals(d){
-  var list = document.getElementById("mealList");
-  var meals = dayMeals(d);
-  if(!meals.length){ list.innerHTML = '<div class="muted tiny">Nothing logged yet.</div>'; return; }
-  list.innerHTML = "";
-  meals.forEach(function(m, i){
-    var row = document.createElement("div");
-    row.className = "meal";
-    row.innerHTML = '<div><div class="ml">'+(m.label||"Meal")+'</div>'+
-      '<div class="mm">'+Math.round(m.kcal)+' kcal · P'+Math.round(m.protein)+' C'+Math.round(m.carbs)+' F'+Math.round(m.fat)+'</div></div>'+
-      '<button class="del" data-i="'+i+'" title="remove">×</button>';
-    list.appendChild(row);
-  });
-  list.querySelectorAll(".del").forEach(function(b){
-    b.addEventListener("click", function(){
-      var i = parseInt(b.getAttribute("data-i"),10);
-      state.food[d].splice(i,1);
-      if(!state.food[d].length) delete state.food[d];
-      save(); renderNutrition();
-    });
-  });
-}
-var chartRef=null;
-function renderProteinChart(){
-  if(typeof Chart==="undefined") return;
-  var labels=[], data=[];
-  for(var i=6;i>=0;i--){
-    var dt=new Date(); dt.setDate(dt.getDate()-i);
-    var k=dt.toISOString().slice(0,10);
-    labels.push(["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][dt.getDay()]);
-    data.push(Math.round(totals(k).protein));
-  }
-  var ctx=document.getElementById("proteinChart");
-  if(chartRef) chartRef.destroy();
-  chartRef=new Chart(ctx,{type:"bar",data:{labels:labels,datasets:[{data:data,
-    backgroundColor:"#2e9e5f",borderRadius:6,maxBarThickness:34}]},
-    options:{plugins:{legend:{display:false},tooltip:{enabled:true}},
-      scales:{y:{beginAtZero:true,grid:{color:"#eef2f7"},ticks:{font:{size:10}}},
-              x:{grid:{display:false},ticks:{font:{size:11}}}},
-      animation:{duration:400}}});
-  // target line via plugin-free: draw nothing extra (keep simple)
-}
-
-/* targets editor */
-document.getElementById("editTargets").addEventListener("click", function(){
-  var ed=document.getElementById("targetEditor");
-  ed.classList.toggle("hidden");
-  document.getElementById("tKcal").value=state.targets.kcal;
-  document.getElementById("tProt").value=state.targets.protein;
-  document.getElementById("tCarb").value=state.targets.carbs;
-  document.getElementById("tFat").value=state.targets.fat;
-});
-document.getElementById("saveTargets").addEventListener("click", function(){
-  state.targets.kcal=+document.getElementById("tKcal").value||DEFAULT_TARGETS.kcal;
-  state.targets.protein=+document.getElementById("tProt").value||DEFAULT_TARGETS.protein;
-  state.targets.carbs=+document.getElementById("tCarb").value||DEFAULT_TARGETS.carbs;
-  state.targets.fat=+document.getElementById("tFat").value||DEFAULT_TARGETS.fat;
-  save(); document.getElementById("targetEditor").classList.add("hidden"); renderNutrition(); toast("Targets saved");
-});
-
-/* estimate via askClaude */
-document.getElementById("estimateBtn").addEventListener("click", async function(){
-  var txt=document.getElementById("mealText").value.trim();
-  if(!txt){ toast("Describe the meal first"); return; }
-  var btn=this, old=btn.innerHTML; btn.innerHTML='<span class="spin"></span> Estimating…'; btn.disabled=true;
-  try{
-    if(!window.cowork || !window.cowork.askClaude) throw new Error("offline");
-    var prompt="You are a nutrition estimator. Estimate the nutrition of the meal below. "+
-      "Reply with ONLY minified JSON, no prose, no code fences: "+
-      '{"label":"short name","kcal":int,"protein":int,"carbs":int,"fat":int}. Meal: '+txt;
-    var res=await window.cowork.askClaude(prompt, []);
-    var str=(typeof res==="string")?res:JSON.stringify(res);
-    var m=str.match(/\{[\s\S]*\}/);
-    if(!m) throw new Error("parse");
-    var o=JSON.parse(m[0]);
-    document.getElementById("mKcal").value=Math.round(o.kcal||0);
-    document.getElementById("mProt").value=Math.round(o.protein||0);
-    document.getElementById("mCarb").value=Math.round(o.carbs||0);
-    document.getElementById("mFat").value=Math.round(o.fat||0);
-    if(o.label && !document.getElementById("mLabel").value) document.getElementById("mLabel").value=o.label;
-    toast("Estimated — check & adjust, then Add");
-  }catch(e){
-    toast("Couldn't auto-estimate — type the numbers, or send a photo to Claude in chat");
-  }
-  btn.innerHTML=old; btn.disabled=false;
-});
-
-document.getElementById("addMeal").addEventListener("click", function(){
-  var d=selectedDay();
-  var meal={
-    label: document.getElementById("mLabel").value.trim() || document.getElementById("mealText").value.trim().slice(0,40) || "Meal",
-    kcal:+document.getElementById("mKcal").value||0,
-    protein:+document.getElementById("mProt").value||0,
-    carbs:+document.getElementById("mCarb").value||0,
-    fat:+document.getElementById("mFat").value||0,
-    ts:Date.now()
-  };
-  if(!meal.kcal && !meal.protein){ toast("Add at least kcal or protein"); return; }
-  if(!state.food[d]) state.food[d]=[];
-  state.food[d].push(meal);
-  save();
-  ["mealText","mKcal","mProt","mCarb","mFat","mLabel"].forEach(function(id){ document.getElementById(id).value=""; });
-  renderNutrition(); toast("Logged ✔");
-});
-
-document.getElementById("dayPick").addEventListener("change", renderNutrition);
-
 /* reset */
 document.getElementById("settingsBtn").addEventListener("click", function(){
   if(confirm("Reset ALL data (workouts, weights, food log) back to the starting program? This can't be undone.")){
     state={ targets:Object.assign({},DEFAULT_TARGETS), food:{}, train:{ ex:{}, lastDone:0 }, selWk:1 };
-    save(); renderTraining(); renderNutrition(); toast("Reset to starting program");
+    save(); renderTraining(); toast("Reset to starting program");
   }
 });
 
@@ -635,8 +422,6 @@ function toast(msg){
 function init(){
   var now=new Date();
   document.getElementById("dateSub").textContent = now.toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"});
-  document.getElementById("dayPick").value = todayKey();
-  document.getElementById("nutDate").textContent="today";
   if(typeof state.train.lastDone!=="number" || state.train.lastDone>=ROTATION.length) state.train.lastDone=-1;
   if(typeof state.selWk!=="number" || state.selWk<0 || state.selWk>=ROTATION.length) state.selWk=suggestedIndex();
   renderTraining();
