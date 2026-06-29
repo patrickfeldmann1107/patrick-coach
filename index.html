@@ -138,12 +138,12 @@ var PROGRAM = {
     {id:"fa6", name:"Plank", sets:2, lo:60, hi:75, start:12, inc:0, unit:"s", time:true, load:"12 kg vest", note:"12 kg weight vest", lastSession:"60 s / 60 s — TOP bodyweight; locked loaded: 12 kg vest going forward (2026-06-22)"}
   ]},
   "Full B": { tag:"Wed · hinge + vertical pull", ex:[
-    {id:"fb1", name:"DB Romanian Deadlift", sets:3, lo:8, hi:12, start:25, inc:2, unit:"kg", perHand:true, lastSession:"25 kg × 9/9/9 (2026-06-17)"},
-    {id:"fb2", name:"Pull-Ups — neutral / chin", sets:3, lo:5, hi:10, start:0, inc:0, unit:"reps", bw:true, vestAt:true, note:"small black light band — target 7/7/7; band drops for set 1 once 10+/set", lastSession:"6 / 6 / 6 with small black band (2026-06-17)"},
-    {id:"fb3", name:"Low-Incline DB Press — neutral (~30°)", sets:3, lo:8, hi:12, start:20, inc:2, unit:"kg", lastSession:"20 kg × 9/9/9 — set 1 normalized vs Wk1 (2026-06-17)"},
-    {id:"fb4", name:"DB Bulgarian Split Squat", sets:2, lo:8, hi:10, start:11, inc:2, unit:"kg", side:true, lastSession:"11 kg × 9/9 per side (2026-06-17)"},
-    {id:"fb5", name:"Hammer Curl", sets:2, lo:10, hi:15, start:12, inc:2, unit:"kg", lastSession:"11 kg × 15/15 — TOP, bumped to 12 kg (2026-06-17)"},
-    {id:"fb6", name:"Hanging Knee Raise", sets:2, lo:8, hi:10, start:4, inc:1, unit:"kg", note:"DB held between feet", lastSession:"15 / 15 bodyweight — TOP, locked loaded: 4 kg DB between feet going forward (2026-06-17)"}
+    {id:"fb1", name:"DB Romanian Deadlift", sets:3, lo:8, hi:12, start:25, inc:2, unit:"kg", perHand:true, lastSession:"25 kg × 9/9/9 — 11pm fatigue, stagnant vs Wk2 (2026-06-24)"},
+    {id:"fb2", name:"Pull-Ups — neutral / chin", sets:3, lo:5, hi:10, start:0, inc:0, unit:"reps", bw:true, vestAt:true, note:"small black light band — target 7/7/7; band drops for set 1 once 10+/set", lastSession:"6 / 6 / 6 with small black band — 11pm fatigue, stagnant vs Wk2 (2026-06-24)"},
+    {id:"fb3", name:"Low-Incline DB Press — neutral (~30°)", sets:3, lo:8, hi:12, start:23, inc:2, unit:"kg", lastSession:"23 kg × 6/6/6 — NEW working weight, jumped from 20, max effort (2026-06-24)"},
+    {id:"fb4", name:"DB Bulgarian Split Squat", sets:2, lo:8, hi:10, start:14, inc:1, unit:"kg", side:true, lastSession:"11 kg × 10/10 per side — TOP, bumped to 14 kg (no 12 on DBs) (2026-06-24)"},
+    {id:"fb5", name:"Hammer Curl", sets:2, lo:10, hi:15, start:14, inc:1, unit:"kg", lastSession:"14 kg × 12/12 — jumped 11 → 14 (no 12 on DBs) (2026-06-24)"},
+    {id:"fb6", name:"Hanging Knee Raise", sets:2, lo:8, hi:10, start:4, inc:1, unit:"kg", note:"DB held between feet (planned — apply next Wed)", lastSession:"bodyweight × 8/8 — deload, 4 kg DB not applied (2026-06-24)"}
   ]},
   "Full C": { tag:"Fri · lunge + row + press", ex:[
     {id:"fc1", name:"DB Reverse Lunge", sets:3, lo:8, hi:10, start:11, inc:2, unit:"kg", side:true, lastSession:"11 kg × 8/8/8 per side (2026-06-12)"},
@@ -214,6 +214,23 @@ function fmtSetsForSummary(e){
   }
 }
 
+
+function targetRepsForSet(ex, setIdx, st){
+  // "Stretch goal" reps for a set, based on last session: last+1, capped at hi,
+  // floored at lo. If weight just bumped (working weight > what was used last), reset to lo.
+  if(!st.history || !st.history.length) return ex.lo;
+  var last = st.history[st.history.length-1];
+  if(!last.sets || setIdx >= last.sets.length) return ex.lo;
+  var lastReps = last.sets[setIdx].reps;
+  if(typeof lastReps !== "number") return ex.lo;
+  var lastW = last.sets[setIdx].w;
+  if(ex.inc>0 && typeof lastW === "number" && lastW < st.weight) return ex.lo;
+  var t = lastReps + 1;
+  if(t < ex.lo) t = ex.lo;
+  if(t > ex.hi) t = ex.hi;
+  return t;
+}
+
 function shareSession(){
   var text = window._lastSession || '';
   if(!text) return;
@@ -268,16 +285,17 @@ function renderExercises(){
     var setboxes = "";
     var unitLab = ex.time ? "sec" : "reps";
     for(var s=0;s<ex.sets;s++){
+      var tReps = targetRepsForSet(ex, s, st);
       if(isW){
         setboxes += '<div class="setbox setbox-w"><span>Set '+(s+1)+'</span>'+
           '<input type="number" inputmode="decimal" data-ex="'+ex.id+'" data-set="'+s+'" data-field="w" placeholder="'+fmtW(st.weight)+'">'+
           '<span class="su">'+ex.unit+'</span>'+
-          '<input type="number" inputmode="numeric" data-ex="'+ex.id+'" data-set="'+s+'" data-field="reps" placeholder="'+ex.lo+'">'+
+          '<input type="number" inputmode="numeric" data-ex="'+ex.id+'" data-set="'+s+'" data-field="reps" placeholder="'+tReps+'">'+
           '<span class="su">reps</span>'+
           '</div>';
       } else {
         setboxes += '<div class="setbox"><span>Set '+(s+1)+'</span>'+
-          '<input type="number" inputmode="numeric" data-ex="'+ex.id+'" data-set="'+s+'" data-field="reps" placeholder="'+ex.lo+'"></div>';
+          '<input type="number" inputmode="numeric" data-ex="'+ex.id+'" data-set="'+s+'" data-field="reps" placeholder="'+tReps+'"></div>';
       }
     }
     var lastTxt = "";
