@@ -215,20 +215,55 @@ function fmtSetsForSummary(e){
 }
 
 
+function parseLastSession(str, ex){
+  if(!str) return null;
+  var top = /\bTOP\b/i.test(str);
+  var m;
+  if(ex.time){
+    var times = str.match(/(\d+)\s*s\b/g);
+    if(times && times.length){
+      return { reps: times.map(function(t){ return parseInt(t,10); }), w:null, top:top };
+    }
+    return null;
+  }
+  m = str.match(/(\d+(?:\.\d+)?)\s*kg\s*×\s*(\d+(?:\/\d+)*)/);
+  if(m){
+    return { reps: m[2].split('/').map(function(x){ return parseInt(x,10); }),
+             w: parseFloat(m[1]), top:top };
+  }
+  m = str.match(/(\d+(?:\s*\/\s*\d+)+)/);
+  if(m){
+    return { reps: m[1].split(/\s*\/\s*/).map(function(x){ return parseInt(x,10); }),
+             w:null, top:top };
+  }
+  return null;
+}
+
 function targetRepsForSet(ex, setIdx, st){
-  // "Stretch goal" reps for a set, based on last session: last+1, capped at hi,
-  // floored at lo. If weight just bumped (working weight > what was used last), reset to lo.
-  if(!st.history || !st.history.length) return ex.lo;
-  var last = st.history[st.history.length-1];
-  if(!last.sets || setIdx >= last.sets.length) return ex.lo;
-  var lastReps = last.sets[setIdx].reps;
-  if(typeof lastReps !== "number") return ex.lo;
-  var lastW = last.sets[setIdx].w;
-  if(ex.inc>0 && typeof lastW === "number" && lastW < st.weight) return ex.lo;
-  var t = lastReps + 1;
-  if(t < ex.lo) t = ex.lo;
-  if(t > ex.hi) t = ex.hi;
-  return t;
+  if(st.history && st.history.length){
+    var last = st.history[st.history.length-1];
+    if(last.sets && setIdx < last.sets.length){
+      var lastReps = last.sets[setIdx].reps;
+      if(typeof lastReps === "number"){
+        var lastW = last.sets[setIdx].w;
+        if(ex.inc>0 && typeof lastW === "number" && lastW < st.weight) return ex.lo;
+        var t = lastReps + 1;
+        if(t < ex.lo) t = ex.lo;
+        if(t > ex.hi) t = ex.hi;
+        return t;
+      }
+    }
+  }
+  var parsed = parseLastSession(ex.lastSession, ex);
+  if(parsed && parsed.reps && setIdx < parsed.reps.length){
+    if(parsed.top) return ex.lo;
+    if(ex.inc>0 && parsed.w != null && parsed.w < st.weight) return ex.lo;
+    var t2 = parsed.reps[setIdx] + 1;
+    if(t2 < ex.lo) t2 = ex.lo;
+    if(t2 > ex.hi) t2 = ex.hi;
+    return t2;
+  }
+  return ex.lo;
 }
 
 function shareSession(){
@@ -304,13 +339,15 @@ function renderExercises(){
       var parts = h.sets.map(function(x){
         if(isW){
           var w = (x.w!=null) ? x.w : h.w;
-          return (w!=null ? fmtW(w)+ex.unit+'×' : '') + x.reps;
+          return (w!=null ? fmtW(w)+ex.unit+"×" : "") + x.reps;
         }
-        if(ex.time) return x.reps+'s';
+        if(ex.time) return x.reps+"s";
         return x.reps;
       });
-      var tail = isW ? '' : (ex.time ? '' : ' '+unitLab);
-      lastTxt = '<div class="last">Last ('+h.date+'): '+parts.join(', ')+tail+'</div>';
+      var tail = isW ? "" : (ex.time ? "" : " "+unitLab);
+      lastTxt = '<div class="last">Last ('+h.date+'): '+parts.join(", ")+tail+'</div>';
+    } else if(ex.lastSession){
+      lastTxt = '<div class="last">Last: '+ex.lastSession+'</div>';
     }
     var sideTag = ex.side ? ' · per side' : (ex.perHand ? ' · per hand':'');
     var formQuery = encodeURIComponent(ex.name.replace(/[—–()]/g," ").replace(/\s+/g," ").trim()+" proper form");
