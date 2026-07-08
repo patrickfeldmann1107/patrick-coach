@@ -189,7 +189,20 @@ function exState(def){
   if(!state.train.ex[def.id]){
     state.train.ex[def.id] = { weight:def.start, history:[] };
   }
-  return state.train.ex[def.id];
+  var st = state.train.ex[def.id];
+  // Auto-sync: never let working weight fall below what you actually used last session.
+  // Handles source `start:` being stale relative to logged history (e.g. after Reset).
+  if(st.history && st.history.length){
+    var last = st.history[st.history.length-1];
+    if(last.sets && last.sets.length){
+      var maxW = 0;
+      last.sets.forEach(function(s){
+        if(typeof s.w === "number" && s.w > maxW) maxW = s.w;
+      });
+      if(maxW > st.weight) st.weight = maxW;
+    }
+  }
+  return st;
 }
 function round(x){ return Math.round(x*2)/2; }
 function todayKey(){ return new Date().toISOString().slice(0,10); }
