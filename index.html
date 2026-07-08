@@ -190,8 +190,10 @@ function exState(def){
     state.train.ex[def.id] = { weight:def.start, history:[] };
   }
   var st = state.train.ex[def.id];
-  // Auto-sync: never let working weight fall below what you actually used last session.
-  // Handles source `start:` being stale relative to logged history (e.g. after Reset).
+  // Auto-sync from history: (1) never lag behind actual last-used weight;
+  // (2) retro-apply a missed progression bump if the last full session hit TOP
+  // at working weight (self-guarded: once bumped, the next render's TOP check
+  // fails because s.w < st.weight, so no double-bump).
   if(st.history && st.history.length){
     var last = st.history[st.history.length-1];
     if(last.sets && last.sets.length){
@@ -200,6 +202,12 @@ function exState(def){
         if(typeof s.w === "number" && s.w > maxW) maxW = s.w;
       });
       if(maxW > st.weight) st.weight = maxW;
+      if(def.inc > 0 && !def.time && last.sets.length >= (def.sets||1)){
+        var allTop = last.sets.every(function(s){
+          return typeof s.reps === "number" && s.reps >= def.hi && (s.w||0) >= st.weight;
+        });
+        if(allTop) st.weight = round(st.weight + def.inc);
+      }
     }
   }
   return st;
