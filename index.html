@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>Coach Dashboard</title>
-<!-- patrick-coach auto-deploy LIVE -->
+<!-- patrick-coach · 5-day PPL (Push/Pull/Legs/Push/Pull) -->
 <style>
 :root{
   color-scheme: light;
@@ -129,35 +129,42 @@ canvas{max-width:100%}
 "use strict";
 /* ---------------- Program ---------------- */
 var PROGRAM = {
-  "Full A": { tag:"Mon · squat + push/pull", ex:[
-    {id:"fa1", name:"Goblet Squat", sets:3, lo:8, hi:12, start:23, inc:2, unit:"kg", lastSession:"23 kg × 9/9/9 — MAX effort (2026-06-22)"},
-    {id:"fa2", name:"Flat DB Press — neutral grip", sets:3, lo:8, hi:12, start:23, inc:2, unit:"kg", lastSession:"23 kg × 8/8/8 — jumped from 20, '20 felt light' (2026-06-22)"},
-    {id:"fa3", name:"One-Arm DB Row", sets:3, lo:8, hi:12, start:25, inc:2.5, unit:"kg", side:true, lastSession:"23 kg × 12/12/12 — TOP, bumped to 25 kg (no 24 on DBs) (2026-06-22)"},
-    {id:"fa4", name:"DB Romanian Deadlift", sets:2, lo:10, hi:12, start:25, inc:2, unit:"kg", perHand:true, lastSession:"23 kg × 11/11 — bumping to 25 (no 24 on DBs) (2026-06-22)"},
-    {id:"fa5", name:"DB Biceps Curl", sets:2, lo:10, hi:15, start:11, inc:2, unit:"kg", lastSession:"11 kg × 12/12 — MAX effort (2026-06-22)"},
-    {id:"fa6", name:"Plank", sets:2, lo:60, hi:75, start:12, inc:0, unit:"s", time:true, load:"12 kg vest", note:"12 kg weight vest", lastSession:"60 s / 60 s — TOP bodyweight; locked loaded: 12 kg vest going forward (2026-06-22)"}
+  "Push A": { tag:"Mon · incline chest + delts + tri", ex:[
+    {id:"pa1", name:"Incline DB Press — neutral (~30–40°)", sets:3, lo:8, hi:12, start:23, inc:2, unit:"kg", lastSession:"NEW 5-day plan · upper-chest primary. Carried ~23 kg from your 3-day low-incline press — start bottom of range, build."},
+    {id:"pa2", name:"Flat DB Press — neutral grip", sets:3, lo:8, hi:12, start:25, inc:2, unit:"kg", lastSession:"Carried 25 kg from your 3-day plan — ease into the extra volume, start bottom of range."},
+    {id:"pa3", name:"DB Lateral Raise", sets:3, lo:12, hi:20, start:8, inc:2, unit:"kg", lastSession:"NEW — side delts, no overhead. Lead with elbows, stop at shoulder height, pain-free. Start light (8 kg)."},
+    {id:"pa4", name:"DB Tate Press", sets:3, lo:12, hi:15, start:8, inc:2, unit:"kg", lastSession:"Carried 8 kg (elbow-friendly triceps from your 3-day plan). Elbows out, DBs meet head-to-head, press up together."}
   ]},
-  "Full B": { tag:"Wed · hinge + vertical pull", ex:[
-    {id:"fb1", name:"DB Romanian Deadlift", sets:3, lo:8, hi:12, start:25, inc:2, unit:"kg", perHand:true, lastSession:"25 kg × 9/9/9 — 11pm fatigue, stagnant vs Wk2 (2026-06-24)"},
-    {id:"fb2", name:"Pull-Ups — neutral / chin", sets:3, lo:5, hi:10, start:0, inc:0, unit:"reps", bw:true, vestAt:true, note:"small black light band — target 7/7/7; band drops for set 1 once 10+/set", lastSession:"6 / 6 / 6 with small black band — 11pm fatigue, stagnant vs Wk2 (2026-06-24)"},
-    {id:"fb3", name:"Low-Incline DB Press — neutral (~30°)", sets:3, lo:8, hi:12, start:23, inc:2, unit:"kg", lastSession:"23 kg × 6/6/6 — NEW working weight, jumped from 20, max effort (2026-06-24)"},
-    {id:"fb4", name:"DB Bulgarian Split Squat", sets:2, lo:8, hi:10, start:14, inc:1, unit:"kg", side:true, lastSession:"11 kg × 10/10 per side — TOP, bumped to 14 kg (no 12 on DBs) (2026-06-24)"},
-    {id:"fb5", name:"Hammer Curl", sets:2, lo:10, hi:15, start:14, inc:1, unit:"kg", lastSession:"14 kg × 12/12 — jumped 11 → 14 (no 12 on DBs) (2026-06-24)"},
-    {id:"fb6", name:"Hanging Knee Raise", sets:2, lo:8, hi:10, start:4, inc:1, unit:"kg", note:"DB held between feet (planned — apply next Wed)", lastSession:"bodyweight × 8/8 — deload, 4 kg DB not applied (2026-06-24)"}
+  "Pull A": { tag:"Tue · vertical pull + biceps", ex:[
+    {id:"la1", name:"Pull-Ups — neutral / chin", sets:3, lo:5, hi:10, start:0, inc:0, unit:"reps", bw:true, vestAt:true, note:"small black light band — drop the band for set 1 once you hit 10+/set", lastSession:"Carried ~9 reps w/ small black band from your 3-day plan — chase 10/set, then thin the band."},
+    {id:"la2", name:"One-Arm DB Row", sets:3, lo:8, hi:12, start:27, inc:2, unit:"kg", side:true, lastSession:"Carried 27 kg from your 3-day plan — start bottom of range."},
+    {id:"la3", name:"Rear-Delt Fly", sets:3, lo:12, hi:15, start:5, inc:2, unit:"kg", lastSession:"Carried ~5 kg from your 3-day plan — keep it strict, high reps."},
+    {id:"la4", name:"Incline DB Curl", sets:3, lo:10, hi:15, start:10, inc:2, unit:"kg", lastSession:"NEW — biceps on the incline bench (stretched position, harder than standing). Start ~10 kg."}
   ]},
-  "Full C": { tag:"Fri · lunge + row + press", ex:[
-    {id:"fc1", name:"DB Reverse Lunge", sets:3, lo:8, hi:10, start:11, inc:2, unit:"kg", side:true, lastSession:"11 kg × 8/8/8 per side (2026-06-12)"},
-    {id:"fc2", name:"Chest-Supported Incline DB Row", sets:3, lo:10, hi:15, start:23, inc:2.5, unit:"kg", lastSession:"23 kg × 10/10/10 (2026-06-12)"},
-    {id:"fc3", name:"Flat DB Press — neutral (proper flat bench)", sets:3, lo:8, hi:12, start:20, inc:2, unit:"kg", lastSession:"20 kg × 8/8/8 (2026-06-12)"},
-    {id:"fc4", name:"Goblet Squat", sets:2, lo:10, hi:15, start:23, inc:2, unit:"kg", lastSession:"23 kg × 10/10 (2026-06-12)"},
-    {id:"fc5t", name:"DB Tate Press", sets:2, lo:12, hi:15, start:8, inc:2, unit:"kg", lastSession:"NEW — swapped in for Lying Triceps Extension (elbow irritation). Elbows OUT, DBs meet head-to-head at chest, press up together. Start light, nail form. (2026-07-08)"},
-    {id:"fc6", name:"Rear-Delt Fly + Ext. Rotation", sets:2, lo:12, hi:15, start:4, inc:2, unit:"kg", lastSession:"4 kg × 10/10 — BELOW range, push reps (2026-06-12)"}
+  "Legs": { tag:"Wed · squat + hinge + calves", ex:[
+    {id:"lg1", name:"Goblet Squat", sets:3, lo:8, hi:12, start:25, inc:2, unit:"kg", lastSession:"Carried 25 kg from your 3-day plan — start bottom of range."},
+    {id:"lg2", name:"DB Romanian Deadlift", sets:3, lo:8, hi:12, start:27, inc:2, unit:"kg", perHand:true, lastSession:"Carried 27 kg from your 3-day plan — hinge, hamstrings loaded."},
+    {id:"lg3", name:"DB Bulgarian Split Squat", sets:3, lo:8, hi:12, start:14, inc:2, unit:"kg", side:true, lastSession:"Carried 14 kg from your 3-day plan."},
+    {id:"lg4", name:"DB Calf Raise", sets:3, lo:12, hi:20, start:20, inc:2, unit:"kg", lastSession:"NEW — full stretch at the bottom, pause at the top. Heavy DB, high reps."},
+    {id:"lg5", name:"Hanging Knee Raise", sets:2, lo:10, hi:15, start:0, inc:0, unit:"reps", bw:true, lastSession:"Core — slow, no swing. Add a DB between the feet once you clear 15/set."}
+  ]},
+  "Push B": { tag:"Thu · flat chest + delts + tri", ex:[
+    {id:"pb1", name:"Flat DB Press — neutral grip (heavier)", sets:3, lo:6, hi:10, start:25, inc:2, unit:"kg", lastSession:"Carried 25 kg from your 3-day plan — lower reps than Push A, heavier feel."},
+    {id:"pb2", name:"Incline DB Press — neutral (pump)", sets:3, lo:12, hi:15, start:16, inc:2, unit:"kg", lastSession:"NEW — second upper-chest hit, lighter + higher reps for volume. Start ~16 kg."},
+    {id:"pb3", name:"DB Lateral Raise", sets:3, lo:12, hi:20, start:8, inc:2, unit:"kg", lastSession:"Side delts, pain-free range. Start light (8 kg)."},
+    {id:"pb4", name:"Close-Grip DB Floor Press", sets:3, lo:10, hi:15, start:18, inc:2, unit:"kg", lastSession:"NEW — triceps, shoulder/elbow-safe (floor limits depth). DBs close together. Start ~18 kg."}
+  ]},
+  "Pull B": { tag:"Fri · horizontal pull + biceps", ex:[
+    {id:"lb1", name:"Chest-Supported Incline DB Row", sets:3, lo:10, hi:15, start:25, inc:2, unit:"kg", lastSession:"Carried ~25 kg from your 3-day plan — chest on the incline bench, no momentum."},
+    {id:"lb2", name:"Pull-Ups — neutral / chin", sets:2, lo:5, hi:10, start:0, inc:0, unit:"reps", bw:true, vestAt:true, note:"small black light band", lastSession:"Second vertical-pull hit of the week — same band, chase reps."},
+    {id:"lb3", name:"Rear-Delt Fly", sets:3, lo:12, hi:15, start:5, inc:2, unit:"kg", lastSession:"Carried ~5 kg — strict, high reps."},
+    {id:"lb4", name:"Hammer Curl", sets:2, lo:10, hi:15, start:14, inc:2, unit:"kg", lastSession:"Carried 14 kg from your 3-day plan."}
   ]}
 };
-var ROTATION = ["Full A","Full B","Full C"];
+var ROTATION = ["Push A","Pull A","Legs","Push B","Pull B"];
 
 /* ---------------- State ---------------- */
-var KEY = "coachData_v1";
+var KEY = "coachData_v2";
 var DEFAULT_TARGETS = { kcal:2400, protein:160, carbs:270, fat:75 };
 var state = load();
 
@@ -181,7 +188,7 @@ function load(){
       return parsed;
     }
   }catch(e){}
-  return { targets:Object.assign({},DEFAULT_TARGETS), food:{}, train:{ ex:{}, lastDone:0 }, selWk:1, migratedV2:true };
+  return { targets:Object.assign({},DEFAULT_TARGETS), food:{}, train:{ ex:{}, lastDone:-1 }, selWk:0, migratedV2:true };
 }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
 
@@ -320,7 +327,7 @@ function renderWkPicker(){
   var last = state.train.lastDone;
   document.getElementById("rotHint").textContent = last>=0
     ? "Last completed: "+ROTATION[last]+". Suggested next is marked ▶."
-    : "Brand new — start with Full A (Mon). Ease in 2–3 weeks, then ramp the weights fast.";
+    : "New 5-day plan — start with Push A. Ease into the extra volume over ~2 weeks, then push the weights.";
 }
 
 function renderExercises(){
@@ -482,7 +489,7 @@ document.getElementById("saveSession").addEventListener("click", function(){
 /* reset */
 document.getElementById("settingsBtn").addEventListener("click", function(){
   if(confirm("Reset ALL data (workouts, weights, food log) back to the starting program? This can't be undone.")){
-    state={ targets:Object.assign({},DEFAULT_TARGETS), food:{}, train:{ ex:{}, lastDone:0 }, selWk:1 };
+    state={ targets:Object.assign({},DEFAULT_TARGETS), food:{}, train:{ ex:{}, lastDone:-1 }, selWk:0 };
     save(); renderTraining(); toast("Reset to starting program");
   }
 });
