@@ -130,23 +130,23 @@ canvas{max-width:100%}
 /* ---------------- Program ---------------- */
 var PROGRAM = {
   "Push A": { tag:"Mon · incline chest + delts + tri", ex:[
-    {id:"pa1", name:"Incline DB Press — neutral (~30–40°)", sets:3, lo:8, hi:12, start:23, inc:2, unit:"kg", lastSession:"NEW 5-day plan · upper-chest primary. Carried ~23 kg from your 3-day low-incline press — start bottom of range, build."},
+    {id:"pa1", name:"Incline DB Press — neutral (~30–40°)", sets:3, lo:8, hi:12, start:23, inc:2, unit:"kg", lastSession:"NEW 5-day plan · upper-chest primary. Carried 23 kg from your 3-day low-incline press (just unstuck to 10/10/10 — chase 12)."},
     {id:"pa2", name:"Flat DB Press — neutral grip", sets:3, lo:8, hi:12, start:25, inc:2, unit:"kg", lastSession:"Carried 25 kg from your 3-day plan — ease into the extra volume, start bottom of range."},
     {id:"pa3", name:"DB Lateral Raise", sets:3, lo:12, hi:20, start:8, inc:2, unit:"kg", lastSession:"NEW — side delts, no overhead. Lead with elbows, stop at shoulder height, pain-free. Start light (8 kg)."},
-    {id:"pa4", name:"DB Tate Press", sets:3, lo:12, hi:15, start:8, inc:2, unit:"kg", lastSession:"Carried 8 kg (elbow-friendly triceps from your 3-day plan). Elbows out, DBs meet head-to-head, press up together."}
+    {id:"pa4", name:"DB Tate Press", sets:3, lo:12, hi:15, start:11, inc:2, unit:"kg", lastSession:"Carried 11 kg from your 3-day plan (elbow-friendly triceps). Elbows out, DBs meet head-to-head, press up together."}
   ]},
   "Pull A": { tag:"Tue · vertical pull + biceps", ex:[
-    {id:"la1", name:"Pull-Ups — neutral / chin", sets:3, lo:5, hi:10, start:0, inc:0, unit:"reps", bw:true, vestAt:true, note:"small black light band — drop the band for set 1 once you hit 10+/set", lastSession:"Carried ~9 reps w/ small black band from your 3-day plan — chase 10/set, then thin the band."},
-    {id:"la2", name:"One-Arm DB Row", sets:3, lo:8, hi:12, start:27, inc:2, unit:"kg", side:true, lastSession:"Carried 27 kg from your 3-day plan — start bottom of range."},
-    {id:"la3", name:"Rear-Delt Fly", sets:3, lo:12, hi:15, start:5, inc:2, unit:"kg", lastSession:"Carried ~5 kg from your 3-day plan — keep it strict, high reps."},
-    {id:"la4", name:"Incline DB Curl", sets:3, lo:10, hi:15, start:10, inc:2, unit:"kg", lastSession:"NEW — biceps on the incline bench (stretched position, harder than standing). Start ~10 kg."}
+    {id:"la1", name:"Pull-Ups — neutral / chin", sets:3, lo:5, hi:10, start:0, inc:0, unit:"reps", bw:true, vestAt:true, note:"small black light band — drop the band for set 1 once you hit 10+/set", lastSession:"Hit 10/10/10 w/ small black band (TOP) — trigger: drop the band for set 1 (unassisted) this cycle."},
+    {id:"la2", name:"One-Arm DB Row", sets:3, lo:8, hi:12, start:30, inc:2, unit:"kg", side:true, lastSession:"Carried 30 kg from your 3-day plan — your rows are the fastest-progressing lift. Start bottom of range."},
+    {id:"la3", name:"Rear-Delt Fly", sets:3, lo:12, hi:15, start:9, inc:2, unit:"kg", lastSession:"Carried 9 kg from your 3-day plan — keep it strict, high reps."},
+    {id:"la4", name:"Incline DB Curl", sets:3, lo:10, hi:15, start:14, inc:2, unit:"kg", lastSession:"NEW — biceps on the incline bench (stretched, harder than standing where you're at 16 kg). Start ~14 kg."}
   ]},
   "Legs": { tag:"Wed · squat + hinge + calves", ex:[
-    {id:"lg1", name:"Goblet Squat", sets:3, lo:8, hi:12, start:25, inc:2, unit:"kg", lastSession:"Carried 25 kg from your 3-day plan — start bottom of range."},
+    {id:"lg1", name:"Goblet Squat", sets:3, lo:8, hi:12, start:27, inc:2, unit:"kg", lastSession:"Carried 27 kg from your 3-day plan — start bottom of range."},
     {id:"lg2", name:"DB Romanian Deadlift", sets:3, lo:8, hi:12, start:27, inc:2, unit:"kg", perHand:true, lastSession:"Carried 27 kg from your 3-day plan — hinge, hamstrings loaded."},
-    {id:"lg3", name:"DB Bulgarian Split Squat", sets:3, lo:8, hi:12, start:14, inc:2, unit:"kg", side:true, lastSession:"Carried 14 kg from your 3-day plan."},
+    {id:"lg3", name:"DB Bulgarian Split Squat", sets:3, lo:8, hi:12, start:23, inc:2, unit:"kg", side:true, lastSession:"Carried 23 kg from your 3-day plan (you jumped 14→20→23)."},
     {id:"lg4", name:"DB Calf Raise", sets:3, lo:12, hi:20, start:20, inc:2, unit:"kg", lastSession:"NEW — full stretch at the bottom, pause at the top. Heavy DB, high reps."},
-    {id:"lg5", name:"Hanging Knee Raise", sets:2, lo:10, hi:15, start:0, inc:0, unit:"reps", bw:true, lastSession:"Core — slow, no swing. Add a DB between the feet once you clear 15/set."}
+    {id:"lg5", name:"Hanging Knee Raise", sets:2, lo:10, hi:15, start:0, inc:0, unit:"reps", bw:true, lastSession:"Core — slow, no swing. You're loading ~7 kg (DB between the feet) — keep that going."}
   ]},
   "Push B": { tag:"Thu · flat chest + delts + tri", ex:[
     {id:"pb1", name:"Flat DB Press — neutral grip (heavier)", sets:3, lo:6, hi:10, start:25, inc:2, unit:"kg", lastSession:"Carried 25 kg from your 3-day plan — lower reps than Push A, heavier feel."},
@@ -155,10 +155,10 @@ var PROGRAM = {
     {id:"pb4", name:"Close-Grip DB Floor Press", sets:3, lo:10, hi:15, start:18, inc:2, unit:"kg", lastSession:"NEW — triceps, shoulder/elbow-safe (floor limits depth). DBs close together. Start ~18 kg."}
   ]},
   "Pull B": { tag:"Fri · horizontal pull + biceps", ex:[
-    {id:"lb1", name:"Chest-Supported Incline DB Row", sets:3, lo:10, hi:15, start:25, inc:2, unit:"kg", lastSession:"Carried ~25 kg from your 3-day plan — chest on the incline bench, no momentum."},
-    {id:"lb2", name:"Pull-Ups — neutral / chin", sets:2, lo:5, hi:10, start:0, inc:0, unit:"reps", bw:true, vestAt:true, note:"small black light band", lastSession:"Second vertical-pull hit of the week — same band, chase reps."},
-    {id:"lb3", name:"Rear-Delt Fly", sets:3, lo:12, hi:15, start:5, inc:2, unit:"kg", lastSession:"Carried ~5 kg — strict, high reps."},
-    {id:"lb4", name:"Hammer Curl", sets:2, lo:10, hi:15, start:14, inc:2, unit:"kg", lastSession:"Carried 14 kg from your 3-day plan."}
+    {id:"lb1", name:"Chest-Supported Incline DB Row", sets:3, lo:10, hi:15, start:30, inc:2, unit:"kg", lastSession:"Carried 30 kg from your 3-day plan — chest on the incline bench, no momentum."},
+    {id:"lb2", name:"Pull-Ups — neutral / chin", sets:2, lo:5, hi:10, start:0, inc:0, unit:"reps", bw:true, vestAt:true, note:"small black light band", lastSession:"Second vertical-pull hit of the week — same band, chase reps toward dropping it."},
+    {id:"lb3", name:"Rear-Delt Fly", sets:3, lo:12, hi:15, start:9, inc:2, unit:"kg", lastSession:"Carried 9 kg — strict, high reps."},
+    {id:"lb4", name:"Hammer Curl", sets:2, lo:10, hi:15, start:16, inc:2, unit:"kg", lastSession:"Carried 16 kg from your 3-day plan."}
   ]}
 };
 var ROTATION = ["Push A","Pull A","Legs","Push B","Pull B"];
