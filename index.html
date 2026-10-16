@@ -166,6 +166,32 @@ var PROGRAM = {
 };
 var ROTATION = ["Upper A","Lower A","Upper B","Lower B"];
 
+/* ---------------- Deload + weight corrections (2026-10-16) ----------------
+   DELOAD: during [from,to] every exercise shows max 2 sets, ~10% lighter
+   (nearest Bowflex notch below working weight), reps at bottom of range
+   (~3 reps in reserve). Deload sessions are saved with deload:true and are
+   ignored by auto-sync / progression / rep targets afterwards.
+   WEIGHT_RESET: one-time downward correction of the working weight; history
+   entries older than `from` no longer pull the weight back up. */
+var DELOAD = { from:"2026-10-19", to:"2026-10-25" };
+var WEIGHT_RESET = {
+  "ua1": { w:25, from:"2026-10-16" },   // Incline DB Press: 27 kg -> 25 kg (reps fell to 4-6)
+  "ua5": { w:11, from:"2026-10-16" }    // Incline DB Curl: 14 kg -> 11 kg (reps fell to 6-7)
+};
+var NOTCHES = [4,7,9,11,14,16,18,20,23,25,27,30,32,34,36,39,41];
+function isDeload(){ var d=todayKey(); return d>=DELOAD.from && d<=DELOAD.to; }
+function deloadWeight(w){
+  var target = w*0.9, best = null;
+  NOTCHES.forEach(function(n){ if(n < w && (best===null || Math.abs(n-target) < Math.abs(best-target))) best = n; });
+  return best===null ? w : best;
+}
+function deloadSets(ex){ return Math.min(ex.sets, 2); }
+function lastReal(st){
+  if(!st.history) return null;
+  for(var i=st.history.length-1;i>=0;i--){ if(!st.history[i].deload) return st.history[i]; }
+  return null;
+}
+
 /* ---------------- State ---------------- */
 var KEY = "coachData_v3";
 var DEFAULT_TARGETS = { kcal:2400, protein:160, carbs:270, fat:75 };
@@ -200,12 +226,15 @@ function exState(def){
     state.train.ex[def.id] = { weight:def.start, history:[] };
   }
   var st = state.train.ex[def.id];
+  var rs = WEIGHT_RESET[def.id];
+  if(rs && st.resetApplied !== rs.from){ st.weight = rs.w; st.resetApplied = rs.from; save(); }
   // Auto-sync from history: (1) never lag behind actual last-used weight;
   // (2) retro-apply a missed progression bump if the last full session hit TOP
   // at working weight (self-guarded: once bumped, the next render's TOP check
   // fails because s.w < st.weight, so no double-bump).
-  if(st.history && st.history.length){
-    var last = st.history[st.history.length-1];
+  var last = lastReal(st);
+  if(last && rs && last.date < rs.from) last = null;
+  if(last){
     if(last.sets && last.sets.length){
       var maxW = 0;
       last.sets.forEach(function(s){
@@ -271,8 +300,11 @@ function parseLastSession(str, ex){
 }
 
 function targetRepsForSet(ex, setIdx, st){
-  if(st.history && st.history.length){
-    var last = st.history[st.history.length-1];
+  if(isDeload()) return ex.lo;
+  var last = lastReal(st);
+  var rsT = WEIGHT_RESET[ex.id];
+  if(last && rsT && last.date < rsT.from) return ex.lo;
+  if(last){
     if(last.sets && setIdx < last.sets.length){
       var lastReps = last.sets[setIdx].reps;
       if(typeof lastReps === "number"){
@@ -341,8 +373,11 @@ function renderExercises(){
   def.ex.forEach(function(ex){
     var st = exState(ex);
     var isW = ex.inc>0;
+    var DL = isDeload();
+    var showW = (DL && isW) ? deloadWeight(st.weight) : st.weight;
+    var nSets = DL ? deloadSets(ex) : ex.sets;
     var tgtBig, tgtRng;
-    if(isW){ tgtBig = fmtW(st.weight)+ex.unit; tgtRng = ex.lo+"–"+ex.hi+" reps"; }
+    if(isW){ tgtBig = fmtW(showW)+ex.unit; tgtRng = DL ? ex.lo+" reps · deload" : ex.lo+"–"+ex.hi+" reps"; }
     else if(ex.time){ tgtBig = "Hold"; tgtRng = ex.lo+"–"+ex.hi+" s"; }
     else { tgtBig = "Bodyweight"; tgtRng = ex.lo+"–"+ex.hi+" reps"; }
 
@@ -350,11 +385,11 @@ function renderExercises(){
     card.className = "ex";
     var setboxes = "";
     var unitLab = ex.time ? "sec" : "reps";
-    for(var s=0;s<ex.sets;s++){
+    for(var s=0;s<nSets;s++){
       var tReps = targetRepsForSet(ex, s, st);
       if(isW){
         setboxes += '<div class="setbox setbox-w"><span>Set '+(s+1)+'</span>'+
-          '<input type="number" inputmode="decimal" data-ex="'+ex.id+'" data-set="'+s+'" data-field="w" placeholder="'+fmtW(st.weight)+'">'+
+          '<input type="number" inputmode="decimal" data-ex="'+ex.id+'" data-set="'+s+'" data-field="w" placeholder="'+fmtW(showW)+'">'+
           '<span class="su">'+ex.unit+'</span>'+
           '<input type="number" inputmode="numeric" data-ex="'+ex.id+'" data-set="'+s+'" data-field="reps" placeholder="'+tReps+'">'+
           '<span class="su">reps</span>'+
@@ -385,14 +420,20 @@ function renderExercises(){
     var formUrl = "https://www.youtube.com/results?search_query="+formQuery;
     card.innerHTML =
       '<div class="h"><div><div class="name">'+ex.name+'</div>'+
-      '<div class="scheme">'+ex.sets+' × '+ex.lo+'–'+ex.hi+(ex.time?' s':' reps')+sideTag+' · <a class="formlink" href="'+formUrl+'" target="_blank" rel="noopener noreferrer">📖 Form</a></div></div>'+
+      '<div class="scheme">'+nSets+' × '+ex.lo+'–'+ex.hi+(ex.time?' s':' reps')+sideTag+' · <a class="formlink" href="'+formUrl+'" target="_blank" rel="noopener noreferrer">📖 Form</a></div></div>'+
       '<div class="tgt"><div class="w">'+tgtBig+'</div><div class="rng">'+tgtRng+'</div></div></div>'+
       '<div class="sets">'+setboxes+'</div>'+ lastTxt;
     list.appendChild(card);
   });
 }
 
-function renderTraining(){ renderWkPicker(); renderExercises(); document.getElementById("sessionSummary").innerHTML=""; }
+function renderTraining(){
+  renderWkPicker(); renderExercises(); document.getElementById("sessionSummary").innerHTML="";
+  var hint = document.getElementById("rotHint");
+  if(isDeload() && hint){
+    hint.innerHTML = '<b>🔋 DELOAD-WOCHE ('+DELOAD.from.slice(8)+'.–'+DELOAD.to.slice(8)+'.10.)</b> — 2 Sätze, ~10 % leichter, 3 Reps im Tank lassen. Keine Steigerungen diese Woche. ~25 min.';
+  }
+}
 
 document.getElementById("saveSession").addEventListener("click", function(){
   var name = ROTATION[state.selWk];
@@ -417,16 +458,19 @@ document.getElementById("saveSession").addEventListener("click", function(){
     Object.keys(setMap).sort(function(a,b){return +a - +b;}).forEach(function(k){
       var s = setMap[k];
       if(s.reps && s.reps>0){
-        if(isW && s.w==null) s.w = st.weight;
+        if(isW && s.w==null) s.w = isDeload() ? deloadWeight(st.weight) : st.weight;
         sets.push(s);
       }
     });
     if(!sets.length) return;
     anyLogged = true;
     var entry = { date: todayKey(), sets: sets };
+    if(isDeload()) entry.deload = true;
     st.history.push(entry);
     var msg, up=false;
-    if(isW){
+    if(isDeload()){
+      msg = "= "+ex.name+": Deload erledigt — Arbeitsgewicht bleibt "+(isW?fmtW(st.weight)+ex.unit:"")+".";
+    } else if(isW){
       var allTopAtWorking = sets.length>=ex.sets && sets.every(function(s){
         return s.reps>=ex.hi && (s.w||0)>=st.weight;
       });
@@ -463,7 +507,7 @@ document.getElementById("saveSession").addEventListener("click", function(){
   var summaryText = "";
   if(sessionLog.length){
     var lineExs = sessionLog.map(function(e){ return e.name + ' ' + fmtSetsForSummary(e); });
-    summaryText = doneName + " done — " + lineExs.join(', ');
+    summaryText = doneName + (isDeload() ? " (DELOAD)" : "") + " done — " + lineExs.join(', ');
   }
   window._lastSession = summaryText;
   if(navigator.clipboard && summaryText){
